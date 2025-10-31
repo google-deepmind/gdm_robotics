@@ -101,6 +101,13 @@ class GymEnvToGdmrEnvWrapperTest(parameterized.TestCase):
           gym_space=spaces.Text(max_length=10),
           expected_spec=specs.StringArray(shape=(), name="text"),
       ),
+      dict(
+          testcase_name="unbounded_box",
+          gym_space=spaces.Box(
+              low=np.inf, high=np.inf, shape=(2, 3), dtype=np.float32
+          ),
+          expected_spec=specs.Array(shape=(2, 3), dtype=np.float32),
+      ),
   )
   def test_spec_conversion(
       self,

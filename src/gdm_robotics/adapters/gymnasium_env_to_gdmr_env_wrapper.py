@@ -211,13 +211,19 @@ def convert_gym_space_to_spec(
         num_values=gym_space.n, dtype=gym_space.dtype, name=name
     )
   elif isinstance(gym_space, spaces.Box):
-    return specs.BoundedArray(
-        shape=gym_space.shape,
-        dtype=gym_space.dtype,
-        minimum=gym_space.low,
-        maximum=gym_space.high,
-        name=name,
-    )
+    if np.isinf(gym_space.low).all() and np.isinf(gym_space.high).all():
+      # If low and high are both inf, the space is unbounded.
+      return specs.Array(
+          shape=gym_space.shape, dtype=gym_space.dtype, name=name
+      )
+    else:
+      return specs.BoundedArray(
+          shape=gym_space.shape,
+          dtype=gym_space.dtype,
+          minimum=gym_space.low,
+          maximum=gym_space.high,
+          name=name,
+      )
   elif isinstance(gym_space, spaces.MultiBinary):
     return specs.BoundedArray(
         shape=gym_space.shape,
