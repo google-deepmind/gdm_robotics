@@ -122,9 +122,17 @@ class Runloop:
     self._should_stop.set()
 
   
-  def run_single_episode(self) -> None:
-    """Runs a single episode."""
-    self._run_episode()
+  def run_single_episode(self) -> bool:
+    """Runs a single episode.
+
+    Note that the run of the episode is gated by the Runloop associated
+    RuntimeOperations. If runtime operations block the episode from executing,
+    this function will return False.
+
+    Returns:
+      True if the episode did execute, false otherwise.
+    """
+    return self._run_episode()
 
   
   def _run_episode(self) -> bool:
