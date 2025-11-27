@@ -83,7 +83,15 @@ def random_array_spec(
 def valid_primitive_value(spec: specs.Array) -> np.ndarray:
   """Returns a random value that adheres to the spec."""
   if isinstance(spec, specs.StringArray):
-    return np.array(random_string(), dtype=object)
+    if not spec.shape:
+      return np.array(random_string(), dtype=object)
+    total_num_strings = int(np.prod(spec.shape))
+    random_strings_array = np.fromiter(
+        (random_string() for _ in range(total_num_strings)),
+        dtype=object,
+        count=total_num_strings,
+    )
+    return random_strings_array.reshape(spec.shape)
   value = np.random.random(size=spec.shape).astype(spec.dtype)
   if isinstance(spec, specs.BoundedArray):
     # Clip specs to handle +/- np.inf in the specs. Cast the spec as the same
