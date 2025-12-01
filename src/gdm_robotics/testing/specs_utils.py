@@ -84,11 +84,11 @@ def valid_primitive_value(spec: specs.Array) -> np.ndarray:
   """Returns a random value that adheres to the spec."""
   if isinstance(spec, specs.StringArray):
     if not spec.shape:
-      return np.array(random_string(), dtype=object)
+      return np.array(random_string(), dtype=spec.string_type)
     total_num_strings = int(np.prod(spec.shape))
     random_strings_array = np.fromiter(
         (random_string() for _ in range(total_num_strings)),
-        dtype=object,
+        dtype=spec.string_type,
         count=total_num_strings,
     )
     return random_strings_array.reshape(spec.shape)
