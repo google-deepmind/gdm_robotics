@@ -47,7 +47,7 @@ class Environment(dm_env.Environment, Generic[ResetOptions]):
 
   def default_reset_options(self) -> ResetOptions:
     """Returns the default ResetOptions."""
-    return Options()
+    return Options()  # pyrefly: ignore[bad-return]
 
   @final
   def reset(self) -> dm_env.TimeStep:
@@ -75,15 +75,15 @@ class Environment(dm_env.Environment, Generic[ResetOptions]):
   # methods could be removed in the future.
 
   @abc.abstractmethod
-  def step(self, action: gdmr_types.ActionType) -> dm_env.TimeStep:
+  def step(self, action: gdmr_types.ActionType) -> dm_env.TimeStep:  # pyrefly: ignore[invalid-type-var]
     """Updates the environment according to action and returns a `TimeStep`."""
 
   @abc.abstractmethod
-  def action_spec(self) -> gdmr_types.ActionSpec:
+  def action_spec(self) -> gdmr_types.ActionSpec:  # pyrefly: ignore[invalid-type-var]
     """Defines the actions that should be provided to `step`."""
 
   @final
-  def observation_spec(self) -> gdmr_types.ObservationSpec:
+  def observation_spec(self) -> gdmr_types.ObservationSpec:  # pyrefly: ignore[invalid-type-var]
     """Defines the observations provided by the environment."""
     return self.timestep_spec().observation
 

@@ -137,7 +137,7 @@ class GymnasiumEnvToGdmrEnvWrapper(
     )
 
   @override
-  def step(self, action: gdmr_types.ActionType) -> dm_env.TimeStep:
+  def step(self, action: gdmr_types.ActionType) -> dm_env.TimeStep:  # pyrefly: ignore[invalid-type-var]
     """Steps the underlying gymnasium environment."""
     observation, reward, terminated, truncated, _ = self._env.step(action)
 
@@ -162,7 +162,7 @@ class GymnasiumEnvToGdmrEnvWrapper(
     )
 
   @override
-  def action_spec(self) -> gdmr_types.ActionSpec:
+  def action_spec(self) -> gdmr_types.ActionSpec:  # pyrefly: ignore[invalid-type-var]
     """Returns the action spec from the underlying environment."""
     return self._action_spec
 
@@ -190,8 +190,8 @@ class GymnasiumEnvToGdmrEnvWrapper(
     return self._env
 
   def _ensure_observation_is_array(
-      self, observation: tree.Structure[Any]
-  ) -> tree.Structure[np.ndarray]:
+      self, observation: tree.Structure[Any]  # pyrefly: ignore[invalid-type-var]
+  ) -> tree.Structure[np.ndarray]:  # pyrefly: ignore[invalid-type-var]
     """Ensures that the observation is an array."""
     tree.assert_same_structure(observation, self._observation_spec)
     return tree.map_structure(
@@ -204,7 +204,7 @@ class GymnasiumEnvToGdmrEnvWrapper(
 def convert_gym_space_to_spec(
     gym_space: gymnasium.Space,
     name: str | None = None,
-) -> tree.Structure[specs.Array]:
+) -> tree.Structure[specs.Array]:  # pyrefly: ignore[bad-return, invalid-type-var]
   """Converts a Gym space to a GDMR-compatible spec."""
   if isinstance(gym_space, spaces.Discrete):
     return specs.DiscreteArray(
@@ -241,9 +241,9 @@ def convert_gym_space_to_spec(
         name=name,
     )
   elif isinstance(gym_space, spaces.Tuple):
-    return tuple(convert_gym_space_to_spec(s) for s in gym_space.spaces)
+    return tuple(convert_gym_space_to_spec(s) for s in gym_space.spaces)  # pyrefly: ignore[bad-return]
   elif isinstance(gym_space, spaces.Dict):
-    return {
+    return {  # pyrefly: ignore[bad-return]
         key: convert_gym_space_to_spec(value, key)
         for key, value in gym_space.spaces.items()
     }

@@ -44,10 +44,10 @@ class _TestEnvironment(environment.Environment):
   def timestep_spec(self) -> gdmr_types.TimeStepSpec:
     return self._mock.timestep_spec()
 
-  def step(self, action: gdmr_types.ActionType) -> dm_env.TimeStep:
+  def step(self, action: gdmr_types.ActionType) -> dm_env.TimeStep:  # pyrefly: ignore[invalid-type-var]
     return self._mock.step(action)
 
-  def action_spec(self) -> gdmr_types.ActionSpec:
+  def action_spec(self) -> gdmr_types.ActionSpec:  # pyrefly: ignore[invalid-type-var]
     return self._mock.action_spec()
 
   # We also need to implement `default_reset_options` as it is called on the

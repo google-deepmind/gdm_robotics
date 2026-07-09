@@ -112,7 +112,7 @@ class GymEnvToGdmrEnvWrapperTest(parameterized.TestCase):
   def test_spec_conversion(
       self,
       gym_space: gymnasium.Space,
-      expected_spec: tree.Structure[specs.Array],
+      expected_spec: tree.Structure[specs.Array],  # pyrefly: ignore[invalid-type-var]
   ):
     self.assertEqual(
         gymnasium_env_to_gdmr_env_wrapper.convert_gym_space_to_spec(gym_space),
@@ -178,7 +178,7 @@ class GymEnvToGdmrEnvWrapperTest(parameterized.TestCase):
                 dtype=np.float32,
             ),
             discount=specs.Array(shape=(), dtype=np.float32),
-            observation={
+            observation={  # pyrefly: ignore[bad-argument-type]
                 "a": specs.BoundedArray(
                     shape=(4, 3),
                     dtype=np.float64,

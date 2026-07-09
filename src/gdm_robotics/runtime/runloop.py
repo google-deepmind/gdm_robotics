@@ -91,7 +91,7 @@ class Runloop:
     self._policy = policy
     self._loggers = list(loggers)
     self._runloop_runtime_operations = list(runloop_runtime_operations)
-    self._reset_options_provider = (
+    self._reset_options_provider = (  # pyrefly: ignore[invalid-type-var]
         reset_options_provider
         if reset_options_provider
         else environment.default_reset_options
@@ -192,7 +192,7 @@ class Runloop:
         with scope.Scope(name="Logger.record_action_and_next_timestep"):
           for logger in self._loggers:
             logger.record_action_and_next_timestep(
-                action, timestep, policy_extra
+                action, timestep, policy_extra  # pyrefly: ignore[bad-argument-type]
             )
 
     logging.info("Episode terminated.")

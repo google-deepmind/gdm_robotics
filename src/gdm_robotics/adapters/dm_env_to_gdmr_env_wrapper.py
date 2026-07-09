@@ -53,7 +53,7 @@ class DmEnvToGdmrEnvWrapper(
     def _zero_like_spec(spec: specs.Array) -> gdmr_types.ArrayType:
       arr = np.zeros(spec.shape, dtype=spec.dtype)
       arr.flags.writeable = False
-      return arr
+      return arr  # pyrefly: ignore[bad-return]
 
     self._zero_reward = tree.map_structure(_zero_like_spec, self._reward_spec)
     self._zero_discount = tree.map_structure(
@@ -61,7 +61,7 @@ class DmEnvToGdmrEnvWrapper(
     )
 
   @override
-  def reset_with_options(
+  def reset_with_options(  # pyrefly: ignore[bad-override]
       self, *, options: gdmr_environment.ResetOptions
   ) -> dm_env.TimeStep:
     """Resets the underlying dm_env environment.
@@ -84,12 +84,12 @@ class DmEnvToGdmrEnvWrapper(
     return self._enforce_timestep(timestep)
 
   @override
-  def step(self, action: gdmr_types.ActionType) -> dm_env.TimeStep:
+  def step(self, action: gdmr_types.ActionType) -> dm_env.TimeStep:  # pyrefly: ignore[invalid-type-var]
     """Steps the underlying dm_env environment."""
     return self._enforce_timestep(self._env.step(action))
 
   @override
-  def action_spec(self) -> gdmr_types.ActionSpec:
+  def action_spec(self) -> gdmr_types.ActionSpec:  # pyrefly: ignore[invalid-type-var]
     """Returns the action spec from the underlying environment."""
     return self._action_spec
 

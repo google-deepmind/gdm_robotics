@@ -67,9 +67,9 @@ STEP_TYPE_SPEC = specs.BoundedArray(
 # NamedTuple for compatibility with tree.map_structure calls.
 class TimeStepSpec(NamedTuple):
   step_type: specs.BoundedArray
-  reward: RewardSpec
-  discount: DiscountSpec
-  observation: ObservationSpec
+  reward: RewardSpec  # pyrefly: ignore[invalid-type-var]
+  discount: DiscountSpec  # pyrefly: ignore[invalid-type-var]
+  observation: ObservationSpec  # pyrefly: ignore[invalid-type-var]
 
 
 # Policy Spec type.

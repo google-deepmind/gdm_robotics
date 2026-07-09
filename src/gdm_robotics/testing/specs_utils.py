@@ -45,7 +45,7 @@ def random_shape(ndims: int | None = None) -> tuple[int, ...]:
 
 
 def random_dtype() -> type[np.floating]:
-  return random.choice([float, np.float32, np.float64])
+  return random.choice([float, np.float32, np.float64])  # pyrefly: ignore[bad-return]
 
 
 def unit_array_spec(
@@ -70,7 +70,7 @@ def random_array_spec(
 
   shape = shape or random_shape()
   name = name or random_string()
-  dtype = dtype or random.choice([np.float32, np.float64])
+  dtype = dtype or random.choice([np.float32, np.float64])  # pyrefly: ignore[bad-argument-count]
   if minimum is None:
     minimum = np.random.random(size=shape) * random.randint(0, 10)
   minimum = minimum.astype(dtype)
@@ -112,8 +112,8 @@ def valid_dict_value(spec: Mapping[str, specs.Array]) -> dict[str, np.ndarray]:
 
 
 def valid_value_for_spec(
-    spec: tree.Structure[specs.Array],
-) -> tree.Structure[np.ndarray]:
+    spec: tree.Structure[specs.Array],  # pyrefly: ignore[invalid-type-var]
+) -> tree.Structure[np.ndarray]:  # pyrefly: ignore[invalid-type-var]
   """Returns a value that adheres to the spec."""
   return tree.map_structure(valid_primitive_value, spec)
 

@@ -29,7 +29,7 @@ class EpisodicLogger(Protocol):
 
   def record_action_and_next_timestep(
       self,
-      action: gdmr_types.ActionType,
+      action: gdmr_types.ActionType,  # pyrefly: ignore[invalid-type-var]
       next_timestep: dm_env.TimeStep,
       policy_extra: Mapping[str, Any],
   ) -> None:
