@@ -25,7 +25,7 @@ from gdm_robotics.interfaces import environment as gdmr_env
 from gdm_robotics.interfaces import episodic_logger as gdmr_logger
 from gdm_robotics.interfaces import policy as gdmr_policy
 
-from gdm_robotics.runtime import scope
+import contextlib
 
 
 class RunloopRuntimeOperations:
@@ -143,7 +143,7 @@ class Runloop:
     """
     # Notify the runtime operations that a new episode is starting and check if
     # they want to stop the runloop.
-    with scope.Scope(name="RunloopRuntimeOperations.before_episode_reset"):
+    with contextlib.nullcontext():
       for ops in self._runloop_runtime_operations:
         if not ops.before_episode_reset():
           logging.info(
@@ -153,50 +153,46 @@ class Runloop:
 
     logging.info("Resetting environment.")
 
-    with scope.Scope(name="Environment.reset"):
+    with contextlib.nullcontext():
       timestep = self._environment.reset_with_options(
           options=self._reset_options_provider()
       )
 
     # Let the runtime operations examine the reset timestep.
-    with scope.Scope(
-        name="RunloopRuntimeOperations.inspect_timestep(reset)"
-    ):
+    with contextlib.nullcontext():
       for ops in self._runloop_runtime_operations:
         ops.inspect_timestep(timestep)
 
-    with scope.Scope(name="Policy.initial_state"):
+    with contextlib.nullcontext():
       policy_state = self._policy.initial_state()
 
-    with scope.Scope(name="Logger.reset"):
+    with contextlib.nullcontext():
       for logger in self._loggers:
         logger.reset(timestep)
 
     logging.info("Start episode loop.")
-    with scope.Scope(name="EpisodeLoop"):
+    with contextlib.nullcontext():
       while not timestep.last() and not self._should_stop.is_set():
-        with scope.Scope(name="Policy.step"):
+        with contextlib.nullcontext():
           (action, policy_extra), policy_state = self._policy.step(
               timestep, policy_state
           )
-        with scope.Scope(name="Environment.step"):
+        with contextlib.nullcontext():
           timestep = self._environment.step(action)
 
         # Let the runtime operations examine the timestep.
-        with scope.Scope(
-            name="RunloopRuntimeOperations.inspect_timestep(stepƒ)"
-        ):
+        with contextlib.nullcontext():
           for ops in self._runloop_runtime_operations:
             ops.inspect_timestep(timestep)
 
-        with scope.Scope(name="Logger.record_action_and_next_timestep"):
+        with contextlib.nullcontext():
           for logger in self._loggers:
             logger.record_action_and_next_timestep(
                 action, timestep, policy_extra  # pyrefly: ignore[bad-argument-type]
             )
 
     logging.info("Episode terminated.")
-    with scope.Scope(name="Logger.write"):
+    with contextlib.nullcontext():
       for logger in self._loggers:
         logger.write()
 
