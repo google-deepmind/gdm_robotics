@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import dataclasses
+import threading
 from unittest import mock
 import dm_env
 from gdm_robotics.interfaces import environment as gdmr_env
@@ -237,6 +238,146 @@ class RunloopTest(absltest.TestCase):
     ).run_single_episode()
 
     env.reset_with_options.assert_called_once_with(options=reset_option)
+
+  def test_on_episode_end(self):
+    env = mock.create_autospec(gdmr_env.Environment)
+    policy = mock.create_autospec(gdmr_policy.Policy)
+    logger = mock.create_autospec(gdmr_logger.EpisodicLogger)
+
+    env.reset_with_options.return_value = dm_env.restart({})
+    env.step.side_effect = [dm_env.termination(1.0, {})]
+    policy.step.return_value = (np.array([]), {}), {}
+
+    call_order = []
+    operations = mock.create_autospec(runloop.RunloopRuntimeOperations)
+    operations.before_episode_reset.return_value = True
+    operations.on_episode_end.side_effect = (
+        lambda: call_order.append("on_episode_end")
+    )
+    logger.record_action_and_next_timestep.side_effect = (
+        lambda *args, **kwargs: call_order.append("record_action")
+    )
+    logger.write.side_effect = lambda: call_order.append("logger_write")
+
+    runloop.Runloop(
+        env,
+        policy,
+        [logger],
+        runloop_runtime_operations=[operations],
+    ).run_single_episode()
+
+    operations.on_episode_end.assert_called_once()
+    self.assertEqual(
+        call_order, ["record_action", "on_episode_end", "logger_write"]
+    )
+
+  def test_on_episode_end_multiple_episodes(self):
+    num_episodes = 3
+    env = mock.create_autospec(gdmr_env.Environment)
+    policy = mock.create_autospec(gdmr_policy.Policy)
+    logger = mock.create_autospec(gdmr_logger.EpisodicLogger)
+
+    env.reset_with_options.return_value = dm_env.restart({})
+    env.step.side_effect = [
+        dm_env.transition(1.0, {}, 1.0),
+        dm_env.termination(1.0, {}),
+    ] * num_episodes
+    policy.step.return_value = (np.array([]), {}), {}
+
+    operations = mock.create_autospec(runloop.RunloopRuntimeOperations)
+    operations.before_episode_reset.return_value = True
+
+    runloop.Runloop(
+        env,
+        policy,
+        [logger],
+        runloop_runtime_operations=[operations],
+    ).run(num_episodes=num_episodes)
+
+    self.assertEqual(operations.on_episode_end.call_count, num_episodes)
+
+  def test_on_episode_end_skipped_when_before_reset_fails(
+      self,
+  ):
+    env = mock.create_autospec(gdmr_env.Environment)
+    policy = mock.create_autospec(gdmr_policy.Policy)
+    logger = mock.create_autospec(gdmr_logger.EpisodicLogger)
+
+    operations = mock.create_autospec(runloop.RunloopRuntimeOperations)
+    operations.before_episode_reset.return_value = False
+
+    executed = runloop.Runloop(
+        env,
+        policy,
+        [logger],
+        runloop_runtime_operations=[operations],
+    ).run_single_episode()
+
+    self.assertFalse(executed)
+    operations.on_episode_end.assert_not_called()
+
+  def test_on_episode_end_called_on_early_stop(self):
+    env = mock.create_autospec(gdmr_env.Environment)
+    policy = mock.create_autospec(gdmr_policy.Policy)
+    logger = mock.create_autospec(gdmr_logger.EpisodicLogger)
+
+    env.reset_with_options.return_value = dm_env.restart({})
+    policy.step.return_value = (np.array([]), {}), {}
+
+    step_started_event = threading.Event()
+
+    def env_step_side_effect(*args, **kwargs):
+      step_started_event.set()
+      return dm_env.transition(1.0, {}, 1.0)
+
+    env.step.side_effect = env_step_side_effect
+
+    operations = mock.create_autospec(runloop.RunloopRuntimeOperations)
+    operations.before_episode_reset.return_value = True
+
+    loop = runloop.Runloop(
+        env,
+        policy,
+        [logger],
+        runloop_runtime_operations=[operations],
+    )
+
+    def stopper():
+      step_started_event.wait()
+      loop.stop()
+
+    stop_thread = threading.Thread(target=stopper)
+    stop_thread.start()
+
+    loop.run_single_episode()
+    stop_thread.join()
+
+    operations.on_episode_end.assert_called_once()
+    logger.write.assert_called_once()
+
+  def test_on_episode_end_called_on_single_timestep_episode(self):
+    env = mock.create_autospec(gdmr_env.Environment)
+    policy = mock.create_autospec(gdmr_policy.Policy)
+    logger = mock.create_autospec(gdmr_logger.EpisodicLogger)
+
+    env.reset_with_options.return_value = dm_env.termination(
+        1.0, {"obs": "value"}
+    )
+
+    operations = mock.create_autospec(runloop.RunloopRuntimeOperations)
+    operations.before_episode_reset.return_value = True
+
+    runloop.Runloop(
+        env,
+        policy,
+        [logger],
+        runloop_runtime_operations=[operations],
+    ).run_single_episode()
+
+    policy.step.assert_not_called()
+    env.step.assert_not_called()
+    operations.on_episode_end.assert_called_once()
+    logger.write.assert_called_once()
 
 
 if __name__ == "__main__":

@@ -59,6 +59,10 @@ class RunloopRuntimeOperations:
     del timestep
     ...
 
+  def on_episode_end(self) -> None:
+    """Called after episode loop ends, before loggers write."""
+    pass
+
 
 class Runloop:
   """Runloop class."""
@@ -192,6 +196,10 @@ class Runloop:
             )
 
     logging.info("Episode terminated.")
+    with contextlib.nullcontext():
+      for ops in self._runloop_runtime_operations:
+        ops.on_episode_end()
+
     with contextlib.nullcontext():
       for logger in self._loggers:
         logger.write()
