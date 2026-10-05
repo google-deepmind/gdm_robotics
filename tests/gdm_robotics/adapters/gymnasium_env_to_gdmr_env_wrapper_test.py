@@ -178,14 +178,14 @@ class GymEnvToGdmrEnvWrapperTest(parameterized.TestCase):
                 dtype=np.float32,
             ),
             discount=specs.Array(shape=(), dtype=np.float32),
-            observation={  # pyrefly: ignore[bad-argument-type]
-                "a": specs.BoundedArray(  # pyrefly: ignore[bad-assignment]
+            observation={
+                "a": specs.BoundedArray(
                     shape=(4, 3),
                     dtype=np.float64,
                     minimum=-5.0,
                     maximum=5.0,
                 ),
-                "b": specs.DiscreteArray(num_values=3, dtype=np.int64),  # pyrefly: ignore[bad-assignment]
+                "b": specs.DiscreteArray(num_values=3, dtype=np.int64),
             },
         ),
     )

@@ -241,9 +241,9 @@ def convert_gym_space_to_spec(
         name=name,
     )
   elif isinstance(gym_space, spaces.Tuple):
-    return tuple(convert_gym_space_to_spec(s) for s in gym_space.spaces)  # pyrefly: ignore[bad-return]
+    return tuple(convert_gym_space_to_spec(s) for s in gym_space.spaces)
   elif isinstance(gym_space, spaces.Dict):
-    return {  # pyrefly: ignore[bad-return]
+    return {
         key: convert_gym_space_to_spec(value, key)
         for key, value in gym_space.spaces.items()
     }

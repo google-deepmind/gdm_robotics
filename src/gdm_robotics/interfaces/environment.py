@@ -88,12 +88,12 @@ class Environment(dm_env.Environment, Generic[ResetOptions]):
     return self.timestep_spec().observation
 
   @final
-  def reward_spec(self) -> gdmr_types.RewardSpec:  # pytype: disable=signature-mismatch
+  def reward_spec(self) -> gdmr_types.RewardSpec:  # pyrefly: ignore[invalid-type-var]
     """Describes the reward returned by the environment."""
     return self.timestep_spec().reward
 
   @final
-  def discount_spec(self) -> gdmr_types.DiscountSpec:  # pytype: disable=signature-mismatch
+  def discount_spec(self) -> gdmr_types.DiscountSpec:  # pyrefly: ignore[invalid-type-var]
     """Describes the discount returned by the environment."""
     return self.timestep_spec().discount
 

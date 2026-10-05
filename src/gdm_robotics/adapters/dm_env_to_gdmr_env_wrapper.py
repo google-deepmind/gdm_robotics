@@ -61,7 +61,7 @@ class DmEnvToGdmrEnvWrapper(
     )
 
   @override
-  def reset_with_options(  # pyrefly: ignore[bad-override]
+  def reset_with_options(
       self, *, options: gdmr_environment.ResetOptions
   ) -> dm_env.TimeStep:
     """Resets the underlying dm_env environment.

@@ -70,7 +70,7 @@ def random_array_spec(
 
   shape = shape or random_shape()
   name = name or random_string()
-  dtype = dtype or random.choice([np.float32, np.float64])  # pyrefly: ignore[bad-argument-count]
+  dtype = dtype or random.choice([np.float32, np.float64])
   if minimum is None:
     minimum = np.random.random(size=shape) * random.randint(0, 10)
   minimum = minimum.astype(dtype)

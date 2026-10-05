@@ -40,7 +40,7 @@ class DmEnvToGdmrEnvWrapperTest(absltest.TestCase):
     with self.assertRaises(TypeError):
       # Disable pytype as we are forcing a runtime check and we know the type is
       # wrong.
-      dm_env_to_gdmr_env_wrapper.DmEnvToGdmrEnvWrapper(NotDmEnv())  # pytype: disable=wrong-arg-types
+      dm_env_to_gdmr_env_wrapper.DmEnvToGdmrEnvWrapper(NotDmEnv())  # pyrefly: ignore[bad-argument-type]
 
   def test_specs(self):
     """Tests if the specs are correctly propagated."""
