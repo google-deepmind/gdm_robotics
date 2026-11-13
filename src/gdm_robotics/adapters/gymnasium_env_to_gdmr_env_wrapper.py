@@ -233,11 +233,13 @@ def convert_gym_space_to_spec(
         name=name,
     )
   elif isinstance(gym_space, spaces.MultiDiscrete):
+    # nvec contains the number of values in each dimension, not the maximum.
+    # Gymnasium's optional start shifts the lower bound of each dimension.
     return specs.BoundedArray(
         shape=gym_space.shape,
         dtype=gym_space.dtype,
-        minimum=np.zeros(gym_space.shape),
-        maximum=gym_space.nvec,
+        minimum=gym_space.start,
+        maximum=gym_space.start + gym_space.nvec - 1,
         name=name,
     )
   elif isinstance(gym_space, spaces.Tuple):

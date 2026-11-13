@@ -93,7 +93,7 @@ class GymEnvToGdmrEnvWrapperTest(parameterized.TestCase):
               shape=(2,),
               dtype=np.int64,
               minimum=[0, 0],
-              maximum=[5, 3],
+              maximum=[4, 2],
           ),
       ),
       dict(
