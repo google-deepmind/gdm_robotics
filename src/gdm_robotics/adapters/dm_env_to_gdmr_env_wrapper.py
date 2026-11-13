@@ -76,11 +76,7 @@ class DmEnvToGdmrEnvWrapper(
       The first TimeStep from the underlying environment.
     """
     del options  # dm_env.Environment.reset doesn't take options.
-    # Force the reward and discount to be type-correct.
     timestep = self._env.reset()
-    timestep = timestep._replace(
-        reward=self._zero_reward, discount=self._zero_discount
-    )
     return self._enforce_timestep(timestep)
 
   @override
@@ -118,6 +114,13 @@ class DmEnvToGdmrEnvWrapper(
 
   def _enforce_timestep(self, timestep: dm_env.TimeStep) -> dm_env.TimeStep:
     """Enforces the timestep to be type-correct."""
+    # Both reset() and step() may return FIRST. A standard dm_env.restart()
+    # supplies None for reward and discount, so normalize before checking
+    # the required array structures and dtypes.
+    if timestep.first():
+      timestep = timestep._replace(
+          reward=self._zero_reward, discount=self._zero_discount
+      )
     # Check that the reward and discount are consistent with the specs.
     tree.assert_same_structure(timestep.reward, self._reward_spec)
     tree.assert_same_structure(timestep.discount, self._discount_spec)
